@@ -1,7 +1,10 @@
 %{
 package parser
 
-import . "github.com/Nightgunner5/goscript"
+import (
+	"fmt"
+	. "github.com/Nightgunner5/goscript"
+)
 %}
 
 %start program
@@ -11,14 +14,15 @@ import . "github.com/Nightgunner5/goscript"
 	inst []Instruction
 }
 
-%type <inst> program stmt expr
+%type <inst> program block_stmt stmt expr
 
 %token <num> NUMBER
 %token print
 
 %left ';'
 
-%left '+'
+%left '+' '-'
+%left '*' '/'
 %left '(' ')'
 
 %%
@@ -40,7 +44,23 @@ stmt:
 		{
 			$$ = append($2, I_print)
 		}
+|	'{' block_stmt '}'
+		{
+			$$ = []Instruction{
+				I_block($2)
+			}
+		}
 ;
+
+block_stmt:
+	block_stmt stmt ';'
+		{
+			$$ = append($1, $2...)
+		}
+|	/* empty */
+		{
+			$$ = []Instruction{}
+		}
 
 expr:
 	'(' expr ')'
@@ -50,6 +70,22 @@ expr:
 |	expr '+' expr
 		{
 			$$ = append(append($1, $3...), I_math_add)
+		}
+|	expr '-' expr
+		{
+			$$ = append(append($1, $3...), I_math_neg, I_math_add)
+		}
+|	'-' expr
+		{
+			$$ = append($2, I_math_neg)
+		}
+|	expr '*' expr
+		{
+			$$ = append(append($1, $3...), I_math_mul)
+		}
+|	expr '/' expr
+		{
+			$$ = append(append($1, $3...), I_math_div)
 		}
 |	NUMBER
 		{
@@ -87,7 +123,25 @@ func (err multiError) Error() string {
 type lexer struct {
 	source []rune
 	err    multiError
+	line   int
 	inst   []Instruction
+}
+
+func (lex *lexer) hasText(text string) bool {
+	t := []rune(text)
+
+	if len(t) > len(lex.source) {
+		return false
+	}
+
+	for i, c := range t {
+		if lex.source[i] != c {
+			return false
+		}
+	}
+
+	lex.source = lex.source[len(t):]
+	return true
 }
 
 func (lex *lexer) Lex(lval *yySymType) int {
@@ -101,7 +155,12 @@ func (lex *lexer) Lex(lval *yySymType) int {
 		lex.source = lex.source[1:]
 	}
 
-	if c == '(' || c == ')' || c == '+' || c == ';' {
+	if c == '\n' {
+		lex.line++
+		return lex.Lex(lval)
+	}
+
+	if c == '(' || c == ')' || c == '+' || c == '-' || c == '*' || c == '/' || c == ';' {
 		return int(c)
 	}
 
@@ -117,24 +176,22 @@ func (lex *lexer) Lex(lval *yySymType) int {
 		return NUMBER
 	}
 
-	if c == 'p' && lex.source[0] == 'r' && lex.source[1] == 'i' && lex.source[2] == 'n' && lex.source[3] == 't' && lex.source[4] == ' ' {
-		lex.source = lex.source[4:]
+	if c == 'p' && lex.hasText("rint") {
 		return print
 	}
-
-	__yyfmt__.Println(string([]rune{c}) + string(lex.source))
 
 	return yyErrCode
 }
 
 func (lex *lexer) Error(e string) {
-	lex.err = append(lex.err, e)
+	lex.err = append(lex.err, fmt.Sprintf("%s (on line %d)", e, lex.line))
 }
 
 func Parse(source string) (Instruction, error) {
 	l := &lexer{
 		source: []rune(source),
 		err: nil,
+		line: 1,
 	}
 
 	yyParse(l)
