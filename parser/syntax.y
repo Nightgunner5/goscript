@@ -27,6 +27,7 @@ program:
 	program stmt ';'
 		{
 			$$ = append($1, $2...)
+			yylex.(*lexer).inst = $$
 		}
 |	/* empty */
 		{
@@ -86,19 +87,15 @@ func (err multiError) Error() string {
 type lexer struct {
 	source []rune
 	err    multiError
-	first   *yySymType
+	inst   []Instruction
 }
 
 func (lex *lexer) Lex(lval *yySymType) int {
-	if lex.first == nil {
-		lex.first = lval
-	}
-
 	c := ' '
 
 	for c == ' ' {
 		if len(lex.source) == 0 {
-			return yyEofCode
+			return 0
 		}
 		c = lex.source[0]
 		lex.source = lex.source[1:]
@@ -134,9 +131,7 @@ func (lex *lexer) Error(e string) {
 	lex.err = append(lex.err, e)
 }
 
-func Parse(source string) ([]Instruction, error) {
-	yyDebug = 1000
-
+func Parse(source string) (Instruction, error) {
 	l := &lexer{
 		source: []rune(source),
 		err: nil,
@@ -144,7 +139,8 @@ func Parse(source string) ([]Instruction, error) {
 
 	yyParse(l)
 
-	__yyfmt__.Printf("%#v\n", l.first)
-
-	return l.first.inst, l.err
+	if len(l.err) == 0 {
+		return I_block(l.inst), nil
+	}
+	return I_block(l.inst), l.err
 }

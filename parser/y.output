@@ -3,7 +3,7 @@ state 0
 	$accept: .program $end 
 	program: .    (2)
 
-	.  reduce 2 (src line 31)
+	.  reduce 2 (src line 32)
 
 	program  goto 1
 
@@ -44,7 +44,7 @@ state 5
 	expr:  expr.+ expr 
 
 	+  shift 8
-	.  reduce 3 (src line 37)
+	.  reduce 3 (src line 38)
 
 
 state 6
@@ -59,7 +59,7 @@ state 6
 state 7
 	expr:  NUMBER.    (6)
 
-	.  reduce 6 (src line 53)
+	.  reduce 6 (src line 54)
 
 
 state 8
@@ -84,13 +84,13 @@ state 10
 	expr:  expr.+ expr 
 	expr:  expr + expr.    (5)
 
-	.  reduce 5 (src line 49)
+	.  reduce 5 (src line 50)
 
 
 state 11
 	expr:  ( expr ).    (4)
 
-	.  reduce 4 (src line 44)
+	.  reduce 4 (src line 45)
 
 
 9 terminals, 4 nonterminals
