@@ -1,27 +1,15 @@
 package main
 
-import "github.com/Nightgunner5/goscript"
-
-func Val(v interface{}) goscript.Value {
-	return goscript.Value{
-		Value: v,
-		Flags: goscript.Flags{},
-	}
-}
+import (
+	"fmt"
+//	"github.com/Nightgunner5/goscript"
+	"github.com/Nightgunner5/goscript/parser"
+)
 
 func main() {
-	var state goscript.State
+	//var state goscript.State
 
-	program := goscript.I_block{
-		goscript.I_const{
-			Value: Val(10.0),
-		},
-		goscript.I_const{
-			Value: Val(7.0),
-		},
-		goscript.I_math_add,
-		goscript.I_print,
-	}
+	fmt.Println(parser.Parse(`print 10 + 7;`))
 
-	program.Execute(&state)
+	//program.Execute(&state)
 }

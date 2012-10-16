@@ -1,0 +1,107 @@
+
+state 0
+	$accept: .program $end 
+	program: .    (2)
+
+	.  reduce 2 (src line 31)
+
+	program  goto 1
+
+state 1
+	$accept:  program.$end 
+	program:  program.stmt ; 
+
+	$end  accept
+	print  shift 3
+	.  error
+
+	stmt  goto 2
+
+state 2
+	program:  program stmt.; 
+
+	;  shift 4
+	.  error
+
+
+state 3
+	stmt:  print.expr 
+
+	NUMBER  shift 7
+	(  shift 6
+	.  error
+
+	expr  goto 5
+
+state 4
+	program:  program stmt ;.    (1)
+
+	.  reduce 1 (src line 26)
+
+
+state 5
+	stmt:  print expr.    (3)
+	expr:  expr.+ expr 
+
+	+  shift 8
+	.  reduce 3 (src line 37)
+
+
+state 6
+	expr:  (.expr ) 
+
+	NUMBER  shift 7
+	(  shift 6
+	.  error
+
+	expr  goto 9
+
+state 7
+	expr:  NUMBER.    (6)
+
+	.  reduce 6 (src line 53)
+
+
+state 8
+	expr:  expr +.expr 
+
+	NUMBER  shift 7
+	(  shift 6
+	.  error
+
+	expr  goto 10
+
+state 9
+	expr:  ( expr.) 
+	expr:  expr.+ expr 
+
+	+  shift 8
+	)  shift 11
+	.  error
+
+
+state 10
+	expr:  expr.+ expr 
+	expr:  expr + expr.    (5)
+
+	.  reduce 5 (src line 49)
+
+
+state 11
+	expr:  ( expr ).    (4)
+
+	.  reduce 4 (src line 44)
+
+
+9 terminals, 4 nonterminals
+7 grammar rules, 12/2000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+53 working sets used
+memory: parser 4/30000
+5 extra closures
+11 shift entries, 1 exceptions
+5 goto entries
+0 entries saved by goto default
+Optimizer space used: output 12/30000
+12 table entries, 0 zero
+maximum spread: 9, maximum offset: 8
