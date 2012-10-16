@@ -64,6 +64,7 @@ type lexer struct {
 	err    multiError
 	line   int
 	inst   []Instruction
+	read   []rune
 }
 
 func (lex *lexer) hasText(text string) bool {
@@ -79,18 +80,21 @@ func (lex *lexer) hasText(text string) bool {
 		}
 	}
 
+	lex.read = append(lex.read, t...)
 	lex.source = lex.source[len(t):]
 	return true
 }
 
 func (lex *lexer) Lex(lval *yySymType) int {
+	lex.read = nil
 	c := ' '
 
-	for c == ' ' {
+	for c == ' ' || c == '\t' {
 		if len(lex.source) == 0 {
 			return 0
 		}
 		c = lex.source[0]
+		lex.read = append(lex.read, c)
 		lex.source = lex.source[1:]
 	}
 
@@ -109,6 +113,7 @@ func (lex *lexer) Lex(lval *yySymType) int {
 		for lex.source[0] >= '0' && lex.source[0] <= '9' {
 			lval.num *= 10
 			lval.num += float64(lex.source[0] - '0')
+			lex.read = append(lex.read, lex.source[0])
 			lex.source = lex.source[1:]
 		}
 
@@ -123,7 +128,12 @@ func (lex *lexer) Lex(lval *yySymType) int {
 }
 
 func (lex *lexer) Error(e string) {
-	lex.err = append(lex.err, fmt.Sprintf("%s (on line %d)", e, lex.line))
+	lastRead := string(lex.read)
+	if lastRead == "" {
+	        lex.err = append(lex.err, fmt.Sprintf("%s (on line %d) (at EOF)", e, lex.line))
+	} else {
+		lex.err = append(lex.err, fmt.Sprintf("%s (on line %d) (last read: %q)", e, lex.line, lastRead))
+	}
 }
 
 func Parse(source string) (Instruction, error) {
@@ -223,7 +233,7 @@ var yyTok3 = []int{
 
 /*	parser for yacc output	*/
 
-var yyDebug = 3
+var yyDebug = 0
 
 type yyLexer interface {
 	Lex(lval *yySymType) int

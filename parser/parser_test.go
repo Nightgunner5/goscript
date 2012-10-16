@@ -1,29 +1,28 @@
-package main
+package parser_test
 
 import (
-	"fmt"
 	"github.com/Nightgunner5/goscript"
 	"github.com/Nightgunner5/goscript/parser"
+	"log"
 )
 
-func main() {
+func ExampleParse() {
 	var state goscript.State
 
 	input := `{
-print
-10
--
--
-7
-;
-}`
-	fmt.Println("Input: ", input)
+	print 10 - -7;
+	print 1 + 4 * 4;
+};`
 
 	program, err := parser.Parse(input)
 
-	fmt.Println("Errors: ", err)
-
-	fmt.Printf("%+v\n", program)
+	if err != nil {
+		log.Println("Error parsing: ", err)
+	}
 
 	program.Execute(&state)
+
+	// Output:
+	// 17
+	// 17
 }
