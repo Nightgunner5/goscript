@@ -21,4 +21,5 @@ type Stack struct {
 
 type Instruction interface {
 	Execute(*State)
+	String() string
 }

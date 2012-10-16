@@ -36,3 +36,17 @@ func (math I_math) Execute(state *State) {
 		state.PushStack(a)
 	}
 }
+
+func (math I_math) String() string {
+	switch math {
+	case I_math_add:
+		return "math_add"
+	case I_math_mul:
+		return "math_mul"
+	case I_math_div:
+		return "math_div"
+	case I_math_neg:
+		return "math_neg"
+	}
+	return "UNKNOWN MATH '" + string([]byte{byte(math)}) + "'"
+}

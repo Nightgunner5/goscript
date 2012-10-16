@@ -19,6 +19,7 @@ import (
 %token <num> NUMBER
 %token print
 
+%left '{' '}'
 %left ';'
 
 %left '+' '-'
@@ -47,7 +48,7 @@ stmt:
 |	'{' block_stmt '}'
 		{
 			$$ = []Instruction{
-				I_block($2)
+				I_block($2),
 			}
 		}
 ;
@@ -160,7 +161,7 @@ func (lex *lexer) Lex(lval *yySymType) int {
 		return lex.Lex(lval)
 	}
 
-	if c == '(' || c == ')' || c == '+' || c == '-' || c == '*' || c == '/' || c == ';' {
+	if c == '(' || c == ')' || c == '+' || c == '-' || c == '*' || c == '/' || c == ';' || c == '{' || c == '}' {
 		return int(c)
 	}
 

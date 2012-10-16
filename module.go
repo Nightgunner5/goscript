@@ -10,5 +10,5 @@ type Module struct {
 
 type Domain struct {
 	Modules map[string]Module // Key == Module.Name
-	Lock sync.RWMutex
+	Lock    sync.RWMutex
 }

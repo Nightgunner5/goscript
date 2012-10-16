@@ -4,9 +4,12 @@ package parser
 import __yyfmt__ "fmt"
 //line syntax.y:2
 		
-import . "github.com/Nightgunner5/goscript"
+import (
+	"fmt"
+	. "github.com/Nightgunner5/goscript"
+)
 
-//line syntax.y:9
+//line syntax.y:12
 type yySymType struct {
 	yys int
 	num  float64
@@ -19,8 +22,13 @@ const print = 57347
 var yyToknames = []string{
 	"NUMBER",
 	"print",
+	" {",
+	" }",
 	" ;",
 	" +",
+	" -",
+	" *",
+	" /",
 	" (",
 	" )",
 }
@@ -30,7 +38,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line syntax.y:67
+//line syntax.y:104
 
 
 type multiError []string
@@ -54,7 +62,25 @@ func (err multiError) Error() string {
 type lexer struct {
 	source []rune
 	err    multiError
+	line   int
 	inst   []Instruction
+}
+
+func (lex *lexer) hasText(text string) bool {
+	t := []rune(text)
+
+	if len(t) > len(lex.source) {
+		return false
+	}
+
+	for i, c := range t {
+		if lex.source[i] != c {
+			return false
+		}
+	}
+
+	lex.source = lex.source[len(t):]
+	return true
 }
 
 func (lex *lexer) Lex(lval *yySymType) int {
@@ -68,7 +94,12 @@ func (lex *lexer) Lex(lval *yySymType) int {
 		lex.source = lex.source[1:]
 	}
 
-	if c == '(' || c == ')' || c == '+' || c == ';' {
+	if c == '\n' {
+		lex.line++
+		return lex.Lex(lval)
+	}
+
+	if c == '(' || c == ')' || c == '+' || c == '-' || c == '*' || c == '/' || c == ';' || c == '{' || c == '}' {
 		return int(c)
 	}
 
@@ -84,24 +115,22 @@ func (lex *lexer) Lex(lval *yySymType) int {
 		return NUMBER
 	}
 
-	if c == 'p' && lex.source[0] == 'r' && lex.source[1] == 'i' && lex.source[2] == 'n' && lex.source[3] == 't' && lex.source[4] == ' ' {
-		lex.source = lex.source[4:]
+	if c == 'p' && lex.hasText("rint") {
 		return print
 	}
-
-	__yyfmt__.Println(string([]rune{c}) + string(lex.source))
 
 	return yyErrCode
 }
 
 func (lex *lexer) Error(e string) {
-	lex.err = append(lex.err, e)
+	lex.err = append(lex.err, fmt.Sprintf("%s (on line %d)", e, lex.line))
 }
 
 func Parse(source string) (Instruction, error) {
 	l := &lexer{
 		source: []rune(source),
 		err: nil,
+		line: 1,
 	}
 
 	yyParse(l)
@@ -119,45 +148,52 @@ var yyExca = []int{
 	-2, 0,
 }
 
-const yyNprod = 7
+const yyNprod = 14
 const yyPrivate = 57344
 
 var yyTokenNames []string
 var yyStates []string
 
-const yyLast = 12
+const yyLast = 32
 
 var yyAct = []int{
 
-	8, 5, 11, 7, 8, 2, 4, 6, 9, 3,
-	10, 1,
+	6, 11, 12, 13, 14, 24, 23, 2, 15, 16,
+	9, 5, 19, 20, 21, 22, 8, 10, 18, 7,
+	11, 12, 13, 14, 13, 14, 3, 4, 17, 3,
+	4, 1,
 }
 var yyPact = []int{
 
-	-1000, 4, 0, -1, -1000, -3, -1, -1000, -1, -7,
-	-1000, -1000,
+	-1000, 24, 3, 6, -1000, -1000, 11, 6, 6, -1000,
+	21, 6, 6, 6, 6, -8, 13, -1000, -3, 13,
+	13, -1000, -1000, -1000, -1000,
 }
 var yyPgo = []int{
 
-	0, 11, 5, 1,
+	0, 31, 17, 7, 0,
 }
 var yyR1 = []int{
 
-	0, 1, 1, 2, 3, 3, 3,
+	0, 1, 1, 3, 3, 2, 2, 4, 4, 4,
+	4, 4, 4, 4,
 }
 var yyR2 = []int{
 
-	0, 3, 0, 2, 3, 3, 1,
+	0, 3, 0, 2, 3, 3, 0, 3, 3, 3,
+	2, 3, 3, 1,
 }
 var yyChk = []int{
 
-	-1000, -1, -2, 5, 6, -3, 8, 4, 7, -3,
-	-3, 9,
+	-1000, -1, -3, 5, 6, 8, -4, 13, 10, 4,
+	-2, 9, 10, 11, 12, -4, -4, 7, -3, -4,
+	-4, -4, -4, 14, 8,
 }
 var yyDef = []int{
 
-	2, -2, 0, 0, 1, 3, 0, 6, 0, 0,
-	5, 4,
+	2, -2, 0, 0, 6, 1, 3, 0, 0, 13,
+	0, 0, 0, 0, 0, 0, 10, 4, 0, 8,
+	9, 11, 12, 7, 5,
 }
 var yyTok1 = []int{
 
@@ -165,8 +201,15 @@ var yyTok1 = []int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	8, 9, 3, 7, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 3, 6,
+	13, 14, 11, 9, 3, 10, 3, 12, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 8,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 6, 3, 7,
 }
 var yyTok2 = []int{
 
@@ -180,7 +223,7 @@ var yyTok3 = []int{
 
 /*	parser for yacc output	*/
 
-var yyDebug = 0
+var yyDebug = 3
 
 type yyLexer interface {
 	Lex(lval *yySymType) int
@@ -401,33 +444,70 @@ yydefault:
 	switch yynt {
 
 	case 1:
-		//line syntax.y:28
+		//line syntax.y:33
 		{
 				yyVAL.inst = append(yyS[yypt-2].inst, yyS[yypt-1].inst...)
 				yylex.(*lexer).inst = yyVAL.inst
 			}
 	case 2:
-		//line syntax.y:33
+		//line syntax.y:38
 		{
 				yyVAL.inst = []Instruction{}
 			}
 	case 3:
-		//line syntax.y:40
+		//line syntax.y:45
 		{
 				yyVAL.inst = append(yyS[yypt-0].inst, I_print)
 			}
 	case 4:
-		//line syntax.y:47
+		//line syntax.y:49
+		{
+				yyVAL.inst = []Instruction{
+					I_block(yyS[yypt-1].inst),
+				}
+			}
+	case 5:
+		//line syntax.y:58
+		{
+				yyVAL.inst = append(yyS[yypt-2].inst, yyS[yypt-1].inst...)
+			}
+	case 6:
+		//line syntax.y:62
+		{
+				yyVAL.inst = []Instruction{}
+			}
+	case 7:
+		//line syntax.y:68
 		{
 				yyVAL.inst = yyS[yypt-1].inst
 			}
-	case 5:
-		//line syntax.y:51
+	case 8:
+		//line syntax.y:72
 		{
 				yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_add)
 			}
-	case 6:
-		//line syntax.y:55
+	case 9:
+		//line syntax.y:76
+		{
+				yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_neg, I_math_add)
+			}
+	case 10:
+		//line syntax.y:80
+		{
+				yyVAL.inst = append(yyS[yypt-0].inst, I_math_neg)
+			}
+	case 11:
+		//line syntax.y:84
+		{
+				yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_mul)
+			}
+	case 12:
+		//line syntax.y:88
+		{
+				yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_div)
+			}
+	case 13:
+		//line syntax.y:92
 		{
 				yyVAL.inst = []Instruction{
 					I_const{

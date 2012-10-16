@@ -3,7 +3,7 @@ state 0
 	$accept: .program $end 
 	program: .    (2)
 
-	.  reduce 2 (src line 32)
+	.  reduce 2 (src line 37)
 
 	program  goto 1
 
@@ -13,6 +13,7 @@ state 1
 
 	$end  accept
 	print  shift 3
+	{  shift 4
 	.  error
 
 	stmt  goto 2
@@ -20,88 +21,230 @@ state 1
 state 2
 	program:  program stmt.; 
 
-	;  shift 4
+	;  shift 5
 	.  error
 
 
 state 3
 	stmt:  print.expr 
 
-	NUMBER  shift 7
-	(  shift 6
+	NUMBER  shift 9
+	-  shift 8
+	(  shift 7
 	.  error
 
-	expr  goto 5
+	expr  goto 6
 
 state 4
-	program:  program stmt ;.    (1)
+	stmt:  {.block_stmt } 
+	block_stmt: .    (6)
 
-	.  reduce 1 (src line 26)
+	.  reduce 6 (src line 61)
 
+	block_stmt  goto 10
 
 state 5
-	stmt:  print expr.    (3)
-	expr:  expr.+ expr 
+	program:  program stmt ;.    (1)
 
-	+  shift 8
-	.  reduce 3 (src line 38)
+	.  reduce 1 (src line 31)
 
 
 state 6
-	expr:  (.expr ) 
+	stmt:  print expr.    (3)
+	expr:  expr.+ expr 
+	expr:  expr.- expr 
+	expr:  expr.* expr 
+	expr:  expr./ expr 
 
-	NUMBER  shift 7
-	(  shift 6
-	.  error
+	+  shift 11
+	-  shift 12
+	*  shift 13
+	/  shift 14
+	.  reduce 3 (src line 43)
 
-	expr  goto 9
 
 state 7
-	expr:  NUMBER.    (6)
+	expr:  (.expr ) 
 
-	.  reduce 6 (src line 54)
+	NUMBER  shift 9
+	-  shift 8
+	(  shift 7
+	.  error
 
+	expr  goto 15
 
 state 8
-	expr:  expr +.expr 
+	expr:  -.expr 
 
-	NUMBER  shift 7
-	(  shift 6
+	NUMBER  shift 9
+	-  shift 8
+	(  shift 7
 	.  error
 
-	expr  goto 10
+	expr  goto 16
 
 state 9
-	expr:  ( expr.) 
-	expr:  expr.+ expr 
+	expr:  NUMBER.    (13)
 
-	+  shift 8
-	)  shift 11
-	.  error
+	.  reduce 13 (src line 91)
 
 
 state 10
-	expr:  expr.+ expr 
-	expr:  expr + expr.    (5)
+	stmt:  { block_stmt.} 
+	block_stmt:  block_stmt.stmt ; 
 
-	.  reduce 5 (src line 50)
+	print  shift 3
+	{  shift 4
+	}  shift 17
+	.  error
 
+	stmt  goto 18
 
 state 11
-	expr:  ( expr ).    (4)
+	expr:  expr +.expr 
 
-	.  reduce 4 (src line 45)
+	NUMBER  shift 9
+	-  shift 8
+	(  shift 7
+	.  error
+
+	expr  goto 19
+
+state 12
+	expr:  expr -.expr 
+
+	NUMBER  shift 9
+	-  shift 8
+	(  shift 7
+	.  error
+
+	expr  goto 20
+
+state 13
+	expr:  expr *.expr 
+
+	NUMBER  shift 9
+	-  shift 8
+	(  shift 7
+	.  error
+
+	expr  goto 21
+
+state 14
+	expr:  expr /.expr 
+
+	NUMBER  shift 9
+	-  shift 8
+	(  shift 7
+	.  error
+
+	expr  goto 22
+
+state 15
+	expr:  ( expr.) 
+	expr:  expr.+ expr 
+	expr:  expr.- expr 
+	expr:  expr.* expr 
+	expr:  expr./ expr 
+
+	+  shift 11
+	-  shift 12
+	*  shift 13
+	/  shift 14
+	)  shift 23
+	.  error
 
 
-9 terminals, 4 nonterminals
-7 grammar rules, 12/2000 states
+state 16
+	expr:  expr.+ expr 
+	expr:  expr.- expr 
+	expr:  - expr.    (10)
+	expr:  expr.* expr 
+	expr:  expr./ expr 
+
+	*  shift 13
+	/  shift 14
+	.  reduce 10 (src line 79)
+
+
+state 17
+	stmt:  { block_stmt }.    (4)
+
+	.  reduce 4 (src line 48)
+
+
+state 18
+	block_stmt:  block_stmt stmt.; 
+
+	;  shift 24
+	.  error
+
+
+state 19
+	expr:  expr.+ expr 
+	expr:  expr + expr.    (8)
+	expr:  expr.- expr 
+	expr:  expr.* expr 
+	expr:  expr./ expr 
+
+	*  shift 13
+	/  shift 14
+	.  reduce 8 (src line 71)
+
+
+state 20
+	expr:  expr.+ expr 
+	expr:  expr.- expr 
+	expr:  expr - expr.    (9)
+	expr:  expr.* expr 
+	expr:  expr./ expr 
+
+	*  shift 13
+	/  shift 14
+	.  reduce 9 (src line 75)
+
+
+state 21
+	expr:  expr.+ expr 
+	expr:  expr.- expr 
+	expr:  expr.* expr 
+	expr:  expr * expr.    (11)
+	expr:  expr./ expr 
+
+	.  reduce 11 (src line 83)
+
+
+state 22
+	expr:  expr.+ expr 
+	expr:  expr.- expr 
+	expr:  expr.* expr 
+	expr:  expr./ expr 
+	expr:  expr / expr.    (12)
+
+	.  reduce 12 (src line 87)
+
+
+state 23
+	expr:  ( expr ).    (7)
+
+	.  reduce 7 (src line 66)
+
+
+state 24
+	block_stmt:  block_stmt stmt ;.    (5)
+
+	.  reduce 5 (src line 56)
+
+
+14 terminals, 5 nonterminals
+14 grammar rules, 25/2000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
-53 working sets used
-memory: parser 4/30000
-5 extra closures
-11 shift entries, 1 exceptions
-5 goto entries
+54 working sets used
+memory: parser 10/30000
+11 extra closures
+43 shift entries, 1 exceptions
+11 goto entries
 0 entries saved by goto default
-Optimizer space used: output 12/30000
-12 table entries, 0 zero
-maximum spread: 9, maximum offset: 8
+Optimizer space used: output 32/30000
+32 table entries, 0 zero
+maximum spread: 14, maximum offset: 14
