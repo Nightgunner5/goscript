@@ -20,7 +20,7 @@ func main() {
 			Value: Val(7.0),
 		},
 		goscript.I_math_add,
-		goscript.I_print{},
+		goscript.I_print,
 	}
 
 	program.Execute(&state)
