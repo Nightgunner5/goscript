@@ -1,9 +1,9 @@
-
 //line syntax.y:2
 package parser
+
 import __yyfmt__ "fmt"
+
 //line syntax.y:2
-		
 import (
 	"fmt"
 	. "github.com/Nightgunner5/goscript"
@@ -11,7 +11,7 @@ import (
 
 //line syntax.y:12
 type yySymType struct {
-	yys int
+	yys  int
 	num  float64
 	inst []Instruction
 }
@@ -39,8 +39,6 @@ const yyErrCode = 2
 const yyMaxDepth = 200
 
 //line syntax.y:104
-
-
 type multiError []string
 
 func (err multiError) Error() string {
@@ -130,7 +128,7 @@ func (lex *lexer) Lex(lval *yySymType) int {
 func (lex *lexer) Error(e string) {
 	lastRead := string(lex.read)
 	if lastRead == "" {
-	        lex.err = append(lex.err, fmt.Sprintf("%s (on line %d) (at EOF)", e, lex.line))
+		lex.err = append(lex.err, fmt.Sprintf("%s (on line %d) (at EOF)", e, lex.line))
 	} else {
 		lex.err = append(lex.err, fmt.Sprintf("%s (on line %d) (last read: %q)", e, lex.line, lastRead))
 	}
@@ -139,8 +137,8 @@ func (lex *lexer) Error(e string) {
 func Parse(source string) (Instruction, error) {
 	l := &lexer{
 		source: []rune(source),
-		err: nil,
-		line: 1,
+		err:    nil,
+		line:   1,
 	}
 
 	yyParse(l)
@@ -456,78 +454,78 @@ yydefault:
 	case 1:
 		//line syntax.y:33
 		{
-				yyVAL.inst = append(yyS[yypt-2].inst, yyS[yypt-1].inst...)
-				yylex.(*lexer).inst = yyVAL.inst
-			}
+			yyVAL.inst = append(yyS[yypt-2].inst, yyS[yypt-1].inst...)
+			yylex.(*lexer).inst = yyVAL.inst
+		}
 	case 2:
 		//line syntax.y:38
 		{
-				yyVAL.inst = []Instruction{}
-			}
+			yyVAL.inst = []Instruction{}
+		}
 	case 3:
 		//line syntax.y:45
 		{
-				yyVAL.inst = append(yyS[yypt-0].inst, I_print)
-			}
+			yyVAL.inst = append(yyS[yypt-0].inst, I_print)
+		}
 	case 4:
 		//line syntax.y:49
 		{
-				yyVAL.inst = []Instruction{
-					I_block(yyS[yypt-1].inst),
-				}
+			yyVAL.inst = []Instruction{
+				I_block(yyS[yypt-1].inst),
 			}
+		}
 	case 5:
 		//line syntax.y:58
 		{
-				yyVAL.inst = append(yyS[yypt-2].inst, yyS[yypt-1].inst...)
-			}
+			yyVAL.inst = append(yyS[yypt-2].inst, yyS[yypt-1].inst...)
+		}
 	case 6:
 		//line syntax.y:62
 		{
-				yyVAL.inst = []Instruction{}
-			}
+			yyVAL.inst = []Instruction{}
+		}
 	case 7:
 		//line syntax.y:68
 		{
-				yyVAL.inst = yyS[yypt-1].inst
-			}
+			yyVAL.inst = yyS[yypt-1].inst
+		}
 	case 8:
 		//line syntax.y:72
 		{
-				yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_add)
-			}
+			yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_add)
+		}
 	case 9:
 		//line syntax.y:76
 		{
-				yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_neg, I_math_add)
-			}
+			yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_neg, I_math_add)
+		}
 	case 10:
 		//line syntax.y:80
 		{
-				yyVAL.inst = append(yyS[yypt-0].inst, I_math_neg)
-			}
+			yyVAL.inst = append(yyS[yypt-0].inst, I_math_neg)
+		}
 	case 11:
 		//line syntax.y:84
 		{
-				yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_mul)
-			}
+			yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_mul)
+		}
 	case 12:
 		//line syntax.y:88
 		{
-				yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_div)
-			}
+			yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_div)
+		}
 	case 13:
 		//line syntax.y:92
 		{
-				yyVAL.inst = []Instruction{
-					I_const{
-						Value: Value{
-							Value: yyS[yypt-0].num,
-							Flags: Flags{},
-						},
+			yyVAL.inst = []Instruction{
+				I_const{
+					Value: Value{
+						Value: yyS[yypt-0].num,
+						Flags: Flags{},
 					},
-				}
+				},
 			}
+		}
 	}
 	goto yystack /* stack new state and value */
 }
