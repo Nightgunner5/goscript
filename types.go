@@ -1,7 +1,5 @@
 package goscript
 
-type Token string
-
 type Flag string
 type Flags []Flag
 
@@ -12,7 +10,7 @@ type Value struct {
 
 type State struct {
 	Parent *State
-	Heap   map[Token]Value
+	Heap   map[string]Value
 	Stack  *Stack
 }
 
@@ -23,5 +21,4 @@ type Stack struct {
 
 type Instruction interface {
 	Execute(*State)
-	String()
 }
