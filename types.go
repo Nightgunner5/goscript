@@ -9,14 +9,18 @@ type Value struct {
 }
 
 type State struct {
-	Parent *State
-	Heap   map[string]Value
-	Stack  *Stack
+	*state
 }
 
-type Stack struct {
-	Parent *Stack
-	Value  Value
+type state struct {
+	parent *state
+	heap   map[string]Value
+	stack  *stack
+}
+
+type stack struct {
+	parent *stack
+	value  Value
 }
 
 type Instruction interface {

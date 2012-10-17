@@ -7,21 +7,23 @@ import __yyfmt__ "fmt"
 import (
 	"fmt"
 	. "github.com/Nightgunner5/goscript"
+	"unicode"
 )
 
-//line syntax.y:12
+//line syntax.y:13
 type yySymType struct {
-	yys  int
-	num  float64
-	inst []Instruction
+	yys   int
+	num   float64
+	ident string
+	inst  []Instruction
 }
 
-const NUMBER = 57346
-const print = 57347
+const identifier = 57346
+const number = 57347
 
 var yyToknames = []string{
-	"NUMBER",
-	"print",
+	"identifier",
+	"number",
 	" {",
 	" }",
 	" ;",
@@ -38,7 +40,8 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line syntax.y:104
+//line syntax.y:125
+
 type multiError []string
 
 func (err multiError) Error() string {
@@ -115,11 +118,22 @@ func (lex *lexer) Lex(lval *yySymType) int {
 			lex.source = lex.source[1:]
 		}
 
-		return NUMBER
+		return number
 	}
 
-	if c == 'p' && lex.hasText("rint") {
-		return print
+	if unicode.IsLetter(c) || c == '_' {
+		var i int
+		for i = 0; i < len(lex.source); i++ {
+			if !unicode.IsLetter(lex.source[i]) &&
+				!unicode.IsDigit(lex.source[i]) &&
+				lex.source[i] != '_' {
+				break
+			}
+		}
+		lval.ident = string(append([]rune{c}, lex.source[:i]...))
+		lex.read = append(lex.read, lex.source[:i]...)
+		lex.source = lex.source[i:]
+		return identifier
 	}
 
 	return yyErrCode
@@ -156,52 +170,56 @@ var yyExca = []int{
 	-2, 0,
 }
 
-const yyNprod = 14
+const yyNprod = 17
 const yyPrivate = 57344
 
 var yyTokenNames []string
 var yyStates []string
 
-const yyLast = 32
+const yyLast = 44
 
 var yyAct = []int{
 
-	6, 11, 12, 13, 14, 24, 23, 2, 15, 16,
-	9, 5, 19, 20, 21, 22, 8, 10, 18, 7,
-	11, 12, 13, 14, 13, 14, 3, 4, 17, 3,
-	4, 1,
+	9, 8, 18, 19, 20, 21, 25, 31, 33, 17,
+	24, 22, 23, 16, 17, 20, 21, 5, 26, 27,
+	28, 29, 30, 12, 13, 6, 32, 7, 1, 11,
+	2, 0, 10, 18, 19, 20, 21, 3, 15, 4,
+	14, 3, 0, 4,
 }
 var yyPact = []int{
 
-	-1000, 24, 3, 6, -1000, -1000, 11, 6, 6, -1000,
-	21, 6, 6, 6, 6, -8, 13, -1000, -3, 13,
-	13, -1000, -1000, -1000, -1000,
+	-1000, 37, 9, 12, -1000, -1000, 19, 33, -1, 24,
+	19, 19, -3, -1000, -1000, -2, -1000, 19, 19, 19,
+	19, 19, -7, 4, 19, -1000, 24, 4, 4, -1000,
+	-1000, -1000, -6, -1000,
 }
 var yyPgo = []int{
 
-	0, 31, 17, 7, 0,
+	0, 28, 27, 30, 0, 1,
 }
 var yyR1 = []int{
 
 	0, 1, 1, 3, 3, 2, 2, 4, 4, 4,
-	4, 4, 4, 4,
+	4, 4, 4, 4, 4, 5, 5,
 }
 var yyR2 = []int{
 
-	0, 3, 0, 2, 3, 3, 0, 3, 3, 3,
-	2, 3, 3, 1,
+	0, 3, 0, 4, 3, 3, 0, 3, 3, 3,
+	2, 3, 3, 4, 1, 3, 1,
 }
 var yyChk = []int{
 
-	-1000, -1, -3, 5, 6, 8, -4, 13, 10, 4,
-	-2, 9, 10, 11, 12, -4, -4, 7, -3, -4,
-	-4, -4, -4, 14, 8,
+	-1000, -1, -3, 4, 6, 8, 13, -2, -5, -4,
+	13, 10, 4, 5, 7, -3, 14, 15, 9, 10,
+	11, 12, -4, -4, 13, 8, -4, -4, -4, -4,
+	-4, 14, -5, 14,
 }
 var yyDef = []int{
 
-	2, -2, 0, 0, 6, 1, 3, 0, 0, 13,
-	0, 0, 0, 0, 0, 0, 10, 4, 0, 8,
-	9, 11, 12, 7, 5,
+	2, -2, 0, 0, 6, 1, 0, 0, 0, 16,
+	0, 0, 0, 14, 4, 0, 3, 0, 0, 0,
+	0, 0, 0, 10, 0, 5, 15, 8, 9, 11,
+	12, 7, 0, 13,
 }
 var yyTok1 = []int{
 
@@ -209,7 +227,7 @@ var yyTok1 = []int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	13, 14, 11, 9, 3, 10, 3, 12, 3, 3,
+	13, 14, 11, 9, 15, 10, 3, 12, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 8,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -452,70 +470,79 @@ yydefault:
 	switch yynt {
 
 	case 1:
-		//line syntax.y:33
+		//line syntax.y:35
 		{
 			yyVAL.inst = append(yyS[yypt-2].inst, yyS[yypt-1].inst...)
 			yylex.(*lexer).inst = yyVAL.inst
 		}
 	case 2:
-		//line syntax.y:38
+		//line syntax.y:40
 		{
 			yyVAL.inst = []Instruction{}
 		}
 	case 3:
-		//line syntax.y:45
+		//line syntax.y:47
 		{
-			yyVAL.inst = append(yyS[yypt-0].inst, I_print)
+			yyVAL.inst = append(yyS[yypt-1].inst, I_call{
+				ID: yyS[yypt-3].ident,
+			}, I_state_popstack)
 		}
 	case 4:
-		//line syntax.y:49
+		//line syntax.y:53
 		{
 			yyVAL.inst = []Instruction{
 				I_block(yyS[yypt-1].inst),
 			}
 		}
 	case 5:
-		//line syntax.y:58
+		//line syntax.y:62
 		{
 			yyVAL.inst = append(yyS[yypt-2].inst, yyS[yypt-1].inst...)
 		}
 	case 6:
-		//line syntax.y:62
+		//line syntax.y:66
 		{
 			yyVAL.inst = []Instruction{}
 		}
 	case 7:
-		//line syntax.y:68
+		//line syntax.y:72
 		{
 			yyVAL.inst = yyS[yypt-1].inst
 		}
 	case 8:
-		//line syntax.y:72
+		//line syntax.y:76
 		{
 			yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_add)
 		}
 	case 9:
-		//line syntax.y:76
+		//line syntax.y:80
 		{
 			yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_neg, I_math_add)
 		}
 	case 10:
-		//line syntax.y:80
+		//line syntax.y:84
 		{
 			yyVAL.inst = append(yyS[yypt-0].inst, I_math_neg)
 		}
 	case 11:
-		//line syntax.y:84
+		//line syntax.y:88
 		{
 			yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_mul)
 		}
 	case 12:
-		//line syntax.y:88
+		//line syntax.y:92
 		{
 			yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_div)
 		}
 	case 13:
-		//line syntax.y:92
+		//line syntax.y:96
+		{
+			yyVAL.inst = append(append([]Instruction{I_state_push}, yyS[yypt-1].inst...), I_call{
+				ID: yyS[yypt-3].ident,
+			}, I_state_pop)
+		}
+	case 14:
+		//line syntax.y:102
 		{
 			yyVAL.inst = []Instruction{
 				I_const{
@@ -525,6 +552,16 @@ yydefault:
 					},
 				},
 			}
+		}
+	case 15:
+		//line syntax.y:116
+		{
+			yyVAL.inst = append(yyS[yypt-2].inst, yyS[yypt-0].inst...)
+		}
+	case 16:
+		//line syntax.y:120
+		{
+			yyVAL.inst = yyS[yypt-0].inst
 		}
 	}
 	goto yystack /* stack new state and value */

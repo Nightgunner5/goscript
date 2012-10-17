@@ -10,8 +10,8 @@ func ExampleParse() {
 	var state goscript.State
 
 	input := `{
-	print 10 - -7;
-	print 1 + 4 * 4;
+	Print(10 - -7);
+	Print(1 + 4 * 4);
 };`
 
 	program, err := parser.Parse(input)

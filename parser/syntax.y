@@ -4,20 +4,22 @@ package parser
 import (
 	"fmt"
 	. "github.com/Nightgunner5/goscript"
+	"unicode"
 )
 %}
 
 %start program
 
 %union {
-	num  float64
-	inst []Instruction
+	num   float64
+	ident string
+	inst  []Instruction
 }
 
-%type <inst> program block_stmt stmt expr
+%type <inst> program block_stmt stmt expr arguments
 
-%token <num> NUMBER
-%token print
+%token <ident> identifier
+%token <num> number
 
 %left '{' '}'
 %left ';'
@@ -41,9 +43,11 @@ program:
 ;
 
 stmt:
-	print expr
+	identifier '(' arguments ')'
 		{
-			$$ = append($2, I_print)
+			$$ = append($3, I_call{
+				ID: $1,
+			}, I_state_popstack)
 		}
 |	'{' block_stmt '}'
 		{
@@ -88,7 +92,13 @@ expr:
 		{
 			$$ = append(append($1, $3...), I_math_div)
 		}
-|	NUMBER
+|	identifier '(' arguments ')'
+		{
+			$$ = append(append([]Instruction{ I_state_push }, $3...), I_call{
+				ID: $1,
+			}, I_state_pop)
+		}
+|	number
 		{
 			$$ = []Instruction{
 				I_const{
@@ -98,6 +108,17 @@ expr:
 					},
 				},
 			}
+		}
+;
+
+arguments:
+	arguments ',' expr
+		{
+			$$ = append($1, $3...)
+		}
+|	expr
+		{
+			$$ = $1
 		}
 ;
 
@@ -179,11 +200,22 @@ func (lex *lexer) Lex(lval *yySymType) int {
 			lex.source = lex.source[1:]
 		}
 
-		return NUMBER
+		return number
 	}
 
-	if c == 'p' && lex.hasText("rint") {
-		return print
+	if unicode.IsLetter(c) || c == '_' {
+		var i int
+                for i = 0; i < len(lex.source); i++ {
+			if !unicode.IsLetter(lex.source[i]) &&
+			   !unicode.IsDigit(lex.source[i]) &&
+			   lex.source[i] != '_' {
+				break
+			}
+		}
+		lval.ident = string(append([]rune{c}, lex.source[:i]...))
+		lex.read = append(lex.read, lex.source[:i]...)
+		lex.source = lex.source[i:]
+		return identifier
 	}
 
 	return yyErrCode

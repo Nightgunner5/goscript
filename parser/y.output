@@ -3,7 +3,7 @@ state 0
 	$accept: .program $end 
 	program: .    (2)
 
-	.  reduce 2 (src line 37)
+	.  reduce 2 (src line 39)
 
 	program  goto 1
 
@@ -12,7 +12,7 @@ state 1
 	program:  program.stmt ; 
 
 	$end  accept
-	print  shift 3
+	identifier  shift 3
 	{  shift 4
 	.  error
 
@@ -26,225 +26,314 @@ state 2
 
 
 state 3
-	stmt:  print.expr 
+	stmt:  identifier.( arguments ) 
 
-	NUMBER  shift 9
-	-  shift 8
-	(  shift 7
+	(  shift 6
 	.  error
 
-	expr  goto 6
 
 state 4
 	stmt:  {.block_stmt } 
 	block_stmt: .    (6)
 
-	.  reduce 6 (src line 61)
+	.  reduce 6 (src line 65)
 
-	block_stmt  goto 10
+	block_stmt  goto 7
 
 state 5
 	program:  program stmt ;.    (1)
 
-	.  reduce 1 (src line 31)
+	.  reduce 1 (src line 33)
 
 
 state 6
-	stmt:  print expr.    (3)
+	stmt:  identifier (.arguments ) 
+
+	identifier  shift 12
+	number  shift 13
+	-  shift 11
+	(  shift 10
+	.  error
+
+	expr  goto 9
+	arguments  goto 8
+
+state 7
+	stmt:  { block_stmt.} 
+	block_stmt:  block_stmt.stmt ; 
+
+	identifier  shift 3
+	{  shift 4
+	}  shift 14
+	.  error
+
+	stmt  goto 15
+
+state 8
+	stmt:  identifier ( arguments.) 
+	arguments:  arguments., expr 
+
+	)  shift 16
+	,  shift 17
+	.  error
+
+
+state 9
 	expr:  expr.+ expr 
 	expr:  expr.- expr 
 	expr:  expr.* expr 
 	expr:  expr./ expr 
+	arguments:  expr.    (16)
 
-	+  shift 11
-	-  shift 12
-	*  shift 13
-	/  shift 14
-	.  reduce 3 (src line 43)
-
-
-state 7
-	expr:  (.expr ) 
-
-	NUMBER  shift 9
-	-  shift 8
-	(  shift 7
-	.  error
-
-	expr  goto 15
-
-state 8
-	expr:  -.expr 
-
-	NUMBER  shift 9
-	-  shift 8
-	(  shift 7
-	.  error
-
-	expr  goto 16
-
-state 9
-	expr:  NUMBER.    (13)
-
-	.  reduce 13 (src line 91)
+	+  shift 18
+	-  shift 19
+	*  shift 20
+	/  shift 21
+	.  reduce 16 (src line 119)
 
 
 state 10
-	stmt:  { block_stmt.} 
-	block_stmt:  block_stmt.stmt ; 
+	expr:  (.expr ) 
 
-	print  shift 3
-	{  shift 4
-	}  shift 17
-	.  error
-
-	stmt  goto 18
-
-state 11
-	expr:  expr +.expr 
-
-	NUMBER  shift 9
-	-  shift 8
-	(  shift 7
-	.  error
-
-	expr  goto 19
-
-state 12
-	expr:  expr -.expr 
-
-	NUMBER  shift 9
-	-  shift 8
-	(  shift 7
-	.  error
-
-	expr  goto 20
-
-state 13
-	expr:  expr *.expr 
-
-	NUMBER  shift 9
-	-  shift 8
-	(  shift 7
-	.  error
-
-	expr  goto 21
-
-state 14
-	expr:  expr /.expr 
-
-	NUMBER  shift 9
-	-  shift 8
-	(  shift 7
+	identifier  shift 12
+	number  shift 13
+	-  shift 11
+	(  shift 10
 	.  error
 
 	expr  goto 22
 
+state 11
+	expr:  -.expr 
+
+	identifier  shift 12
+	number  shift 13
+	-  shift 11
+	(  shift 10
+	.  error
+
+	expr  goto 23
+
+state 12
+	expr:  identifier.( arguments ) 
+
+	(  shift 24
+	.  error
+
+
+state 13
+	expr:  number.    (14)
+
+	.  reduce 14 (src line 101)
+
+
+state 14
+	stmt:  { block_stmt }.    (4)
+
+	.  reduce 4 (src line 52)
+
+
 state 15
+	block_stmt:  block_stmt stmt.; 
+
+	;  shift 25
+	.  error
+
+
+state 16
+	stmt:  identifier ( arguments ).    (3)
+
+	.  reduce 3 (src line 45)
+
+
+state 17
+	arguments:  arguments ,.expr 
+
+	identifier  shift 12
+	number  shift 13
+	-  shift 11
+	(  shift 10
+	.  error
+
+	expr  goto 26
+
+state 18
+	expr:  expr +.expr 
+
+	identifier  shift 12
+	number  shift 13
+	-  shift 11
+	(  shift 10
+	.  error
+
+	expr  goto 27
+
+state 19
+	expr:  expr -.expr 
+
+	identifier  shift 12
+	number  shift 13
+	-  shift 11
+	(  shift 10
+	.  error
+
+	expr  goto 28
+
+state 20
+	expr:  expr *.expr 
+
+	identifier  shift 12
+	number  shift 13
+	-  shift 11
+	(  shift 10
+	.  error
+
+	expr  goto 29
+
+state 21
+	expr:  expr /.expr 
+
+	identifier  shift 12
+	number  shift 13
+	-  shift 11
+	(  shift 10
+	.  error
+
+	expr  goto 30
+
+state 22
 	expr:  ( expr.) 
 	expr:  expr.+ expr 
 	expr:  expr.- expr 
 	expr:  expr.* expr 
 	expr:  expr./ expr 
 
-	+  shift 11
-	-  shift 12
-	*  shift 13
-	/  shift 14
-	)  shift 23
+	+  shift 18
+	-  shift 19
+	*  shift 20
+	/  shift 21
+	)  shift 31
 	.  error
 
 
-state 16
+state 23
 	expr:  expr.+ expr 
 	expr:  expr.- expr 
 	expr:  - expr.    (10)
 	expr:  expr.* expr 
 	expr:  expr./ expr 
 
-	*  shift 13
-	/  shift 14
-	.  reduce 10 (src line 79)
+	*  shift 20
+	/  shift 21
+	.  reduce 10 (src line 83)
 
 
-state 17
-	stmt:  { block_stmt }.    (4)
+state 24
+	expr:  identifier (.arguments ) 
 
-	.  reduce 4 (src line 48)
-
-
-state 18
-	block_stmt:  block_stmt stmt.; 
-
-	;  shift 24
+	identifier  shift 12
+	number  shift 13
+	-  shift 11
+	(  shift 10
 	.  error
 
+	expr  goto 9
+	arguments  goto 32
 
-state 19
+state 25
+	block_stmt:  block_stmt stmt ;.    (5)
+
+	.  reduce 5 (src line 60)
+
+
+state 26
+	expr:  expr.+ expr 
+	expr:  expr.- expr 
+	expr:  expr.* expr 
+	expr:  expr./ expr 
+	arguments:  arguments , expr.    (15)
+
+	+  shift 18
+	-  shift 19
+	*  shift 20
+	/  shift 21
+	.  reduce 15 (src line 114)
+
+
+state 27
 	expr:  expr.+ expr 
 	expr:  expr + expr.    (8)
 	expr:  expr.- expr 
 	expr:  expr.* expr 
 	expr:  expr./ expr 
 
-	*  shift 13
-	/  shift 14
-	.  reduce 8 (src line 71)
+	*  shift 20
+	/  shift 21
+	.  reduce 8 (src line 75)
 
 
-state 20
+state 28
 	expr:  expr.+ expr 
 	expr:  expr.- expr 
 	expr:  expr - expr.    (9)
 	expr:  expr.* expr 
 	expr:  expr./ expr 
 
-	*  shift 13
-	/  shift 14
-	.  reduce 9 (src line 75)
+	*  shift 20
+	/  shift 21
+	.  reduce 9 (src line 79)
 
 
-state 21
+state 29
 	expr:  expr.+ expr 
 	expr:  expr.- expr 
 	expr:  expr.* expr 
 	expr:  expr * expr.    (11)
 	expr:  expr./ expr 
 
-	.  reduce 11 (src line 83)
+	.  reduce 11 (src line 87)
 
 
-state 22
+state 30
 	expr:  expr.+ expr 
 	expr:  expr.- expr 
 	expr:  expr.* expr 
 	expr:  expr./ expr 
 	expr:  expr / expr.    (12)
 
-	.  reduce 12 (src line 87)
+	.  reduce 12 (src line 91)
 
 
-state 23
+state 31
 	expr:  ( expr ).    (7)
 
-	.  reduce 7 (src line 66)
+	.  reduce 7 (src line 70)
 
 
-state 24
-	block_stmt:  block_stmt stmt ;.    (5)
+state 32
+	expr:  identifier ( arguments.) 
+	arguments:  arguments., expr 
 
-	.  reduce 5 (src line 56)
+	)  shift 33
+	,  shift 17
+	.  error
 
 
-14 terminals, 5 nonterminals
-14 grammar rules, 25/2000 states
+state 33
+	expr:  identifier ( arguments ).    (13)
+
+	.  reduce 13 (src line 95)
+
+
+15 terminals, 6 nonterminals
+17 grammar rules, 34/2000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
-54 working sets used
-memory: parser 10/30000
-11 extra closures
-43 shift entries, 1 exceptions
-11 goto entries
-0 entries saved by goto default
-Optimizer space used: output 32/30000
-32 table entries, 0 zero
-maximum spread: 14, maximum offset: 14
+55 working sets used
+memory: parser 14/30000
+0 extra closures
+68 shift entries, 1 exceptions
+14 goto entries
+1 entries saved by goto default
+Optimizer space used: output 44/30000
+44 table entries, 2 zero
+maximum spread: 15, maximum offset: 24
