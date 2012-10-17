@@ -40,7 +40,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line syntax.y:125
+//line syntax.y:120
 
 type multiError []string
 
@@ -170,56 +170,56 @@ var yyExca = []int{
 	-2, 0,
 }
 
-const yyNprod = 17
+const yyNprod = 16
 const yyPrivate = 57344
 
 var yyTokenNames []string
 var yyStates []string
 
-const yyLast = 44
+const yyLast = 43
 
 var yyAct = []int{
 
-	9, 8, 18, 19, 20, 21, 25, 31, 33, 17,
-	24, 22, 23, 16, 17, 20, 21, 5, 26, 27,
-	28, 29, 30, 12, 13, 6, 32, 7, 1, 11,
-	2, 0, 10, 18, 19, 20, 21, 3, 15, 4,
-	14, 3, 0, 4,
+	10, 9, 18, 19, 20, 21, 6, 30, 32, 17,
+	16, 17, 22, 23, 18, 19, 20, 21, 25, 26,
+	27, 28, 29, 13, 14, 24, 31, 20, 21, 12,
+	7, 4, 11, 5, 15, 4, 2, 5, 3, 1,
+	0, 0, 8,
 }
 var yyPact = []int{
 
-	-1000, 37, 9, 12, -1000, -1000, 19, 33, -1, 24,
-	19, 19, -3, -1000, -1000, -2, -1000, 19, 19, 19,
-	19, 19, -7, 4, 19, -1000, 24, 4, 4, -1000,
-	-1000, -1000, -6, -1000,
+	-1000, -1000, 31, -2, 17, -1000, -1000, 19, 27, -4,
+	5, 19, 19, 12, -1000, -1000, -1000, 19, 19, 19,
+	19, 19, -7, 16, 19, 5, 16, 16, -1000, -1000,
+	-1000, -6, -1000,
 }
 var yyPgo = []int{
 
-	0, 28, 27, 30, 0, 1,
+	0, 39, 36, 38, 0, 1,
 }
 var yyR1 = []int{
 
-	0, 1, 1, 3, 3, 2, 2, 4, 4, 4,
-	4, 4, 4, 4, 4, 5, 5,
+	0, 1, 3, 3, 2, 2, 4, 4, 4, 4,
+	4, 4, 4, 4, 5, 5,
 }
 var yyR2 = []int{
 
-	0, 3, 0, 4, 3, 3, 0, 3, 3, 3,
-	2, 3, 3, 4, 1, 3, 1,
+	0, 1, 4, 3, 3, 0, 3, 3, 3, 2,
+	3, 3, 4, 1, 3, 1,
 }
 var yyChk = []int{
 
-	-1000, -1, -3, 4, 6, 8, 13, -2, -5, -4,
-	13, 10, 4, 5, 7, -3, 14, 15, 9, 10,
-	11, 12, -4, -4, 13, 8, -4, -4, -4, -4,
-	-4, 14, -5, 14,
+	-1000, -1, -2, -3, 4, 6, 8, 13, -2, -5,
+	-4, 13, 10, 4, 5, 7, 14, 15, 9, 10,
+	11, 12, -4, -4, 13, -4, -4, -4, -4, -4,
+	14, -5, 14,
 }
 var yyDef = []int{
 
-	2, -2, 0, 0, 6, 1, 0, 0, 0, 16,
-	0, 0, 0, 14, 4, 0, 3, 0, 0, 0,
-	0, 0, 0, 10, 0, 5, 15, 8, 9, 11,
-	12, 7, 0, 13,
+	5, -2, 1, 0, 0, 5, 4, 0, 0, 0,
+	15, 0, 0, 0, 13, 3, 2, 0, 0, 0,
+	0, 0, 0, 9, 0, 14, 7, 8, 10, 11,
+	6, 0, 12,
 }
 var yyTok1 = []int{
 
@@ -472,77 +472,71 @@ yydefault:
 	case 1:
 		//line syntax.y:35
 		{
-			yyVAL.inst = append(yyS[yypt-2].inst, yyS[yypt-1].inst...)
-			yylex.(*lexer).inst = yyVAL.inst
+			yyVAL.inst, yylex.(*lexer).inst = yyS[yypt-0].inst, yyS[yypt-0].inst
 		}
 	case 2:
-		//line syntax.y:40
-		{
-			yyVAL.inst = []Instruction{}
-		}
-	case 3:
-		//line syntax.y:47
+		//line syntax.y:42
 		{
 			yyVAL.inst = append(yyS[yypt-1].inst, I_call{
 				ID: yyS[yypt-3].ident,
 			}, I_state_popstack)
 		}
-	case 4:
-		//line syntax.y:53
+	case 3:
+		//line syntax.y:48
 		{
 			yyVAL.inst = []Instruction{
 				I_block(yyS[yypt-1].inst),
 			}
 		}
-	case 5:
-		//line syntax.y:62
+	case 4:
+		//line syntax.y:57
 		{
-			yyVAL.inst = append(yyS[yypt-2].inst, yyS[yypt-1].inst...)
+			yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-1].inst...), I_assert_nostack)
 		}
-	case 6:
-		//line syntax.y:66
+	case 5:
+		//line syntax.y:61
 		{
 			yyVAL.inst = []Instruction{}
 		}
-	case 7:
-		//line syntax.y:72
+	case 6:
+		//line syntax.y:67
 		{
 			yyVAL.inst = yyS[yypt-1].inst
 		}
-	case 8:
-		//line syntax.y:76
+	case 7:
+		//line syntax.y:71
 		{
 			yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_add)
 		}
-	case 9:
-		//line syntax.y:80
+	case 8:
+		//line syntax.y:75
 		{
 			yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_neg, I_math_add)
 		}
-	case 10:
-		//line syntax.y:84
+	case 9:
+		//line syntax.y:79
 		{
 			yyVAL.inst = append(yyS[yypt-0].inst, I_math_neg)
 		}
-	case 11:
-		//line syntax.y:88
+	case 10:
+		//line syntax.y:83
 		{
 			yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_mul)
 		}
-	case 12:
-		//line syntax.y:92
+	case 11:
+		//line syntax.y:87
 		{
 			yyVAL.inst = append(append(yyS[yypt-2].inst, yyS[yypt-0].inst...), I_math_div)
 		}
-	case 13:
-		//line syntax.y:96
+	case 12:
+		//line syntax.y:91
 		{
 			yyVAL.inst = append(append([]Instruction{I_state_push}, yyS[yypt-1].inst...), I_call{
 				ID: yyS[yypt-3].ident,
 			}, I_state_pop)
 		}
-	case 14:
-		//line syntax.y:102
+	case 13:
+		//line syntax.y:97
 		{
 			yyVAL.inst = []Instruction{
 				I_const{
@@ -553,13 +547,13 @@ yydefault:
 				},
 			}
 		}
-	case 15:
-		//line syntax.y:116
+	case 14:
+		//line syntax.y:111
 		{
 			yyVAL.inst = append(yyS[yypt-2].inst, yyS[yypt-0].inst...)
 		}
-	case 16:
-		//line syntax.y:120
+	case 15:
+		//line syntax.y:115
 		{
 			yyVAL.inst = yyS[yypt-0].inst
 		}

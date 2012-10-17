@@ -1,8 +1,5 @@
 package goscript
 
-type Flag string
-type Flags []Flag
-
 type Value struct {
 	Value interface{}
 	Flags Flags

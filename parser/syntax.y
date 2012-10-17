@@ -31,14 +31,9 @@ import (
 %%
 
 program:
-	program stmt ';'
+	block_stmt
 		{
-			$$ = append($1, $2...)
-			yylex.(*lexer).inst = $$
-		}
-|	/* empty */
-		{
-			$$ = []Instruction{}
+			$$, yylex.(*lexer).inst = $1, $1
 		}
 ;
 
@@ -60,7 +55,7 @@ stmt:
 block_stmt:
 	block_stmt stmt ';'
 		{
-			$$ = append($1, $2...)
+			$$ = append(append($1, $2...), I_assert_nostack)
 		}
 |	/* empty */
 		{

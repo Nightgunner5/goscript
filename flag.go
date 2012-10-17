@@ -1,5 +1,8 @@
 package goscript
 
+type Flag string
+type Flags []Flag
+
 func (f Flags) Has(flag Flag) bool {
 	for _, have := range f {
 		if have == flag {
